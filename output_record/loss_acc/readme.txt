@@ -1,0 +1,1 @@
+# Your ouput npy file, which record eval_loss and eval_acc, will auto be saved in this folder
