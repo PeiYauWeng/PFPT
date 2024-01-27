@@ -29,10 +29,10 @@ class fedprox(fedavg):
                 self.client_model[i].train()
                 if comm_round > 0:
                     if self.class_mask is not None:
-                        l, t, a = train_prox(self.client_model[i], self.selected_distributed_dataloaders[i], 
+                        l, t, a = train_prox(self.client_model[i], self.server_model, self.selected_distributed_dataloaders[i], 
                                         optimizer, self.loss_fun, self.mu, self.device, mask)
                     else:
-                        l, t, a = train_prox(self.client_model[i], self.selected_distributed_dataloaders[i], 
+                        l, t, a = train_prox(self.client_model[i], self.server_model, self.selected_distributed_dataloaders[i], 
                                         optimizer, self.loss_fun, self.mu, self.device)
                 else:
                     if self.class_mask is not None:

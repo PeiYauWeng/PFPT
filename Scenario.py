@@ -8,7 +8,7 @@ class FL_scenario(object):
         self.n_clients = n_clients
         self.n_clients_each_round = n_clients_each_round
         self.distributed_dataloaders = distributed_dataloaders
-        #np.random.seed(None)
+        np.random.seed(None)
         #self.personalized = personalized
         if self.n_clients != self.n_clients_each_round:
             self.type = 'cross_devices'

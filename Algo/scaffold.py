@@ -9,7 +9,7 @@ from util.train_eval import train, evaluate, train_scaffold
 from util.print_info import print_epoch_end
 
 class scaffold(fedavg):
-    def __init__(self, server_model, scenario, loss_fun, class_mask, fed_method='scaffold', device='cuda'):
+    def __init__(self, server_model, scenario, loss_fun, class_mask, fed_method='scaffold', nonpara_hidden=128, device='cuda'):
         super(scaffold, self).__init__(server_model, scenario, loss_fun, class_mask, fed_method, nonpara_hidden, device)
         #self.device = device
         self.personalized_model_weights = self.scenario.init_personalized_model_weights(server_model, device=device)

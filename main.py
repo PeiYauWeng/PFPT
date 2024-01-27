@@ -113,7 +113,7 @@ if __name__ == '__main__':
     elif args.dataset == 'fourdataset':
         data_name = ['mnistm', 'fashion', 'cinic10', 'mmafedb']
         trainset, class_mask = four_dataset_reader([30000]*4, train=True, transform=preprocess)
-        testset, _ = four_dataset_reader([1000]*4, train=False, transform=preprocess)
+        testset, _ = four_dataset_reader([2500]*4, train=False, transform=preprocess)
         num_classes = 37
         print(args.dataset)
     else:
