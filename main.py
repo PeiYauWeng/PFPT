@@ -5,6 +5,7 @@ from torch import nn
 import torch.utils.data as Data
 import numpy as np
 import torchvision
+from tqdm._tqdm import trange
 import pytz
 from datetime import datetime
 from Algo.get_algos import get_algorithm
@@ -69,6 +70,8 @@ if __name__ == '__main__':
                         help='Define the number of hidden neurons in Nonparametric aggregation method')
     parser.add_argument('--save_model', type=bool, default=False,
                         help='Save the trained model in the last epoch')
+    parser.add_argument('--instance_label', type=int, default=0,
+                        help='instance label')
     args = parser.parse_args()
     print(args.device)
     print(torch.cuda.get_device_name())
@@ -154,10 +157,10 @@ if __name__ == '__main__':
         else:
             data_partitioner.dirichlet_split_noniid(alpha=args.alpha, least_samples=32, manual_seed=seed)
         #setup log file for recording
-        npy_save_path = f"./output_record/loss_acc/info_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}_{timeInLA}"
-        pool_save_path = f"./output_record/loss_acc/pool_record_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}_{timeInLA}"
-        log_file_local_training = open(f"./output_record/log_output/local_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}.txt", mode="w+", encoding="utf-8")
-        log_file_global_aggregation = open(f"./output_record/log_output/global_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}.txt", 
+        npy_save_path = f"./output_record/loss_acc/info_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}_({args.instance_label})"
+        pool_save_path = f"./output_record/loss_acc/pool_record_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}_({args.instance_label})"
+        log_file_local_training = open(f"./output_record/log_output/local_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}_({args.instance_label}).txt", mode="w+", encoding="utf-8")
+        log_file_global_aggregation = open(f"./output_record/log_output/global_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_alpha{args.alpha}_({args.instance_label}).txt", 
                                            mode="a+", encoding="utf-8")
     elif args.data_distribution == 'manual_extreme_heterogeneity':
         if isinstance(data_partitioner, list):
@@ -166,10 +169,10 @@ if __name__ == '__main__':
         else:
             data_partitioner.manual_allocating_noniid(args.n_dominated_class, 0.99, 1.0)
         #setup log file for recording
-        npy_save_path = f"./output_record/loss_acc/info_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_{timeInLA}"
-        pool_save_path = f"./output_record/loss_acc/pool_record_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_{timeInLA}"
-        log_file_local_training = open(f"./output_record/log_output/local_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}.txt", mode="w+", encoding="utf-8")
-        log_file_global_aggregation = open(f"./output_record/log_output/global_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}.txt", 
+        npy_save_path = f"./output_record/loss_acc/info_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_({args.instance_label})"
+        pool_save_path = f"./output_record/loss_acc/pool_record_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_({args.instance_label})"
+        log_file_local_training = open(f"./output_record/log_output/local_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_({args.instance_label}).txt", mode="w+", encoding="utf-8")
+        log_file_global_aggregation = open(f"./output_record/log_output/global_{args.model_type}_{args.alg}_{args.dataset}_{args.n_clients}clietns_{scenrio_type}_{args.data_distribution}_({args.instance_label}).txt", 
                                            mode="a+", encoding="utf-8")
     else:
         raise ValueError("Input data distribution is not supported")
@@ -260,7 +263,7 @@ if __name__ == '__main__':
             algo = algclass(server_model=server_model,scenario=fl_scen,
                             loss_fun=nn.CrossEntropyLoss(), class_mask=class_mask, device=args.device)
         
-        for comm_round in range(args.comms):
+        for comm_round in trange(args.comms):
             algo.client_train(comm_round=comm_round, epochs=args.local_eps, lr=args.lr, 
                               output_file=log_file_local_training, print_output=True)
             algo.server_aggre()

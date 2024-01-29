@@ -1,0 +1,2 @@
+python3 -u main.py --alg fedavg_nonpara --dataset fourdataset --batch 16 --device cuda:$1 --comms 120 --lr 5e-4 --n_clients 80 --model_type L2P --alpha 0.5 --instance_label 2
+echo "fedavg_nonpara fourdataset comms=120 lr=5e-4 alpha=0.5 done! (2)"

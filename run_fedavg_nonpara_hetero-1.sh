@@ -1,0 +1,2 @@
+python3 -u main.py --alg fedavg_nonpara --dataset fourdataset --batch 16 --device cuda:$1 --comms 120 --lr 1e-4 --n_clients 80 --model_type L2P --data_distribution manual_extreme_heterogeneity --n_dominated_class 1 --instance_label 1
+echo "fedavg_nonpara fourdataset comms=120 lr=1e-4 hetero done! (1)"
