@@ -11,6 +11,7 @@ from datetime import datetime
 from Algo.get_algos import get_algorithm
 from data_util.DataTransformBuilder import build_data_transform
 from data_util.DataDistributer import DataPartitioner
+from data_util.TinyImageNet_reader import TinyImageNet_reader
 from data_util.PACS_reader import Pacs_reader
 from data_util.Four_dataset_reader import four_dataset_reader
 from Scenario import FL_scenario
