@@ -132,12 +132,12 @@ class MMAFEDB_reader(Dataset):
         
 def four_dataset_reader(subset_size_list, train=True, transform=None):
     class_mask = list()
-    mnistm = MNISTM(root='./Dataset/MNISTM', subset_size=subset_size_list[0], shift_label=0, train=train, transform=transform)
-    fashsionRGB = Fashion_RGB_reader(root='./Dataset/FashionMNIST',subset_size=subset_size_list[1], 
+    mnistm = MNISTM(root='../Probabilistic_Prompt_Aggregation_ver2/Dataset/MNISTM', subset_size=subset_size_list[0], shift_label=0, train=train, transform=transform)
+    fashsionRGB = Fashion_RGB_reader(root='../Probabilistic_Prompt_Aggregation_ver2/Dataset/FashionMNIST',subset_size=subset_size_list[1], 
                                      shift_label=10, train=train, transform=transform)
-    cinic = Cinic10_reader(root='./Dataset/cinic10-py', subset_size=subset_size_list[2],
+    cinic = Cinic10_reader(root='../Probabilistic_Prompt_Aggregation_ver2/Dataset/cinic10-py', subset_size=subset_size_list[2],
                            shift_label=20, train=train, transform=transform)
-    mmafedb = MMAFEDB_reader('./Dataset/MMAFEDB', subset_size=subset_size_list[3], 
+    mmafedb = MMAFEDB_reader('../Probabilistic_Prompt_Aggregation_ver2/Dataset/MMAFEDB', subset_size=subset_size_list[3], 
                              shift_label=30, train=train, transform=transform)
     dataset_list = [mnistm, fashsionRGB, cinic, mmafedb]
     nb_classes = 0

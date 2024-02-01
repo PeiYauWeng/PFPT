@@ -20,11 +20,12 @@ from Models.L2P_heuristic_model import L2P_ViT_B32
 from Models.pFedPG_model import client_prompted_vit_b32, BaseHeadsForLocal, prompt_generator
 from util.train_eval import evaluate_pFedPG, train_eval_pFedPG, evaluate_all_pFedPG, evaluate_all_pFedPG_mask
 from util.saving_tools import save_eval_npy_file, save_model_trainable_part, save_pfedpg_baseHeads
+os.environ['TORCH_HOME'] = '/home/qh1002/Code/Probabilistic_Prompt_Aggregation_ver2/'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--alg', type=str, default='fedavg',
-                        help='Algorithm to choose: [fedavg | fedprox | fedopt | scaffold | fedavg_gmm | pfedpg | fedavg_nonpara | fedprox_nonpara]')
+                        help='Algorithm to choose: [fedavg | fedprox | fedopt | scaffold | fedavg_gmm | pfedpg | fedavg_nonpara]')
     #parser.add_argument('--scenario', type=str, default='cross_devices',
                         #help='Federated Learning Scenario to choose: [cross_devices | cross_silo]')
     parser.add_argument('--dataset', type=str, default='cifar10',
@@ -68,6 +69,8 @@ if __name__ == '__main__':
                         help='Define L2P heuristic model if selecting top_k prompts in pool by batchwise')
     parser.add_argument('--nonpara_hidden', type=int, default=128,
                         help='Define the number of hidden neurons in Nonparametric aggregation method')
+    parser.add_argument('--reduce_sim_scalar', type=float, default=0.01,
+                        help='control reduce similarity in L2P model')
     parser.add_argument('--save_model', type=bool, default=False,
                         help='Save the trained model in the last epoch')
     parser.add_argument('--instance_label', type=int, default=0,
@@ -110,8 +113,8 @@ if __name__ == '__main__':
         testset = Data.ConcatDataset(testset)
         num_classes = 7
     elif args.dataset == 'tinyimagenet':
-        trainset = TinyImageNet_reader('./Dataset/tiny-imagenet-200/', train=True, transform=preprocess)
-        testset = TinyImageNet_reader('./Dataset/tiny-imagenet-200/', train=False, transform=preprocess)
+        trainset = TinyImageNet_reader('../Probabilistic_Prompt_Aggregation_ver2/Dataset/tiny-imagenet-200/', train=True, transform=preprocess)
+        testset = TinyImageNet_reader('../Probabilistic_Prompt_Aggregation_ver2/Dataset/tiny-imagenet-200/', train=False, transform=preprocess)
         num_classes = 200
     elif args.dataset == 'fourdataset':
         data_name = ['mnistm', 'fashion', 'cinic10', 'mmafedb']
@@ -265,7 +268,7 @@ if __name__ == '__main__':
         
         for comm_round in trange(args.comms):
             algo.client_train(comm_round=comm_round, epochs=args.local_eps, lr=args.lr, 
-                              output_file=log_file_local_training, print_output=True)
+                              output_file=log_file_local_training, reduce_sim_scalar=args.reduce_sim_scalar, print_output=True)
             algo.server_aggre()
             print(f'--------------------------Round {comm_round+1} complete----------------------------',
                   file=log_file_local_training)

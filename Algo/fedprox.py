@@ -11,7 +11,7 @@ class fedprox(fedavg):
         super(fedprox, self).__init__(server_model, scenario, loss_fun, class_mask, fed_method, nonpara_hidden, device)
         self.mu = mu
 
-    def client_train(self, comm_round, epochs, lr, output_file, opt_func=torch.optim.Adam, print_output=False):
+    def client_train(self, comm_round, epochs, lr, output_file, opt_func=torch.optim.Adam, reduce_sim_scalar=0.01, print_output=False):
         if self.scenario.type == 'cross_devices':
             self.selected_client_index, self.selected_distributed_dataloaders, self.selected_client_weights \
             = self.scenario.cross_devices_random_selecting()
@@ -30,17 +30,17 @@ class fedprox(fedavg):
                 if comm_round > 0:
                     if self.class_mask is not None:
                         l, t, a = train_prox(self.client_model[i], self.server_model, self.selected_distributed_dataloaders[i], 
-                                        optimizer, self.loss_fun, self.mu, self.device, mask)
+                                        optimizer, self.loss_fun, self.mu, self.device, reduce_sim_scalar, mask)
                     else:
                         l, t, a = train_prox(self.client_model[i], self.server_model, self.selected_distributed_dataloaders[i], 
-                                        optimizer, self.loss_fun, self.mu, self.device)
+                                        optimizer, self.loss_fun, self.mu, self.device, reduce_sim_scalar)
                 else:
                     if self.class_mask is not None:
                         l, t, a = train(self.client_model[i], self.selected_distributed_dataloaders[i], 
-                                    optimizer, self.loss_fun, self.device, mask)
+                                    optimizer, self.loss_fun, self.device, reduce_sim_scalar, mask)
                     else:
                         l, t, a = train(self.client_model[i], self.selected_distributed_dataloaders[i], 
-                                        optimizer, self.loss_fun, self.device)
+                                        optimizer, self.loss_fun, self.device, reduce_sim_scalar)
                 if print_output:
                     print_epoch_end(epoch, l, t, a, output_file)
             if hasattr(self.client_model[i], 'trained_prompts_checklist'):

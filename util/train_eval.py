@@ -14,7 +14,7 @@ def scaffold_tuning_gradients(model, server_controls, client_controls):
         if param.requires_grad==True:
             param.grad.data += (server_controls[name] - client_controls[name])
     
-def train(model, data_loader, optimizer, loss_fun, device='cuda', mask=None):
+def train(model, data_loader, optimizer, loss_fun, device='cuda', reduce_sim_scalar=0.01, mask=None):
     model.train()
     loss_all = 0
     total = 0
@@ -31,7 +31,7 @@ def train(model, data_loader, optimizer, loss_fun, device='cuda', mask=None):
                 not_mask = torch.tensor(not_mask).to(device).long()
                 logits = logits.index_fill(dim=1, index=not_mask, value=float('-inf'))
             loss = loss_fun(logits, target)
-            loss = loss + 0.01*reduce_sim
+            loss = loss + reduce_sim_scalar*reduce_sim
         else:
             if mask is not None:
                 not_mask = np.setdiff1d(np.arange(model.num_classes), mask)
@@ -213,7 +213,7 @@ def evaluate_all_pFedPG_mask(clients, all_test_loader, prompt_gen, vit_net, outp
     print("Average Accuracy for global testset: {:.4f}".format(average_accuracy), file=output_file)
     print("Maximal Accuracy for global testset: {:.4f}".format(max_accuracy), file=output_file)
 
-def train_prox(model, server_model, data_loader, optimizer, loss_fun, mu, device='cuda', mask=None):
+def train_prox(model, server_model, data_loader, optimizer, loss_fun, mu, device='cuda', reduce_sim_scalar=0.01, mask=None):
     model.train()
     loss_all = 0
     total = 0
@@ -236,7 +236,7 @@ def train_prox(model, server_model, data_loader, optimizer, loss_fun, mu, device
                 not_mask = torch.tensor(not_mask).to(device).long()
                 logits = logits.index_fill(dim=1, index=not_mask, value=float('-inf'))
             loss = loss_fun(logits, target)
-            loss = loss + 0.01*reduce_sim
+            loss = loss + reduce_sim_scalar*reduce_sim
         else:
             if mask is not None:
                 not_mask = np.setdiff1d(np.arange(model.num_classes), mask)

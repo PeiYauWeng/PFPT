@@ -27,7 +27,7 @@ class fedavg(nn.Module):
         for epoch in range(epochs):
             self.client_model[idx].train()'''
 
-    def client_train(self, comm_round, epochs, lr, output_file, opt_func=torch.optim.Adam, print_output=False):
+    def client_train(self, comm_round, epochs, lr, output_file, opt_func=torch.optim.Adam, reduce_sim_scalar=0.01, print_output=False):
         if self.scenario.type == 'cross_devices':
             self.selected_client_index, self.selected_distributed_dataloaders, self.selected_client_weights \
             = self.scenario.cross_devices_random_selecting()
@@ -45,10 +45,10 @@ class fedavg(nn.Module):
                 self.client_model[i].train()
                 if self.class_mask is not None:
                     l, t, a = train(self.client_model[i], self.selected_distributed_dataloaders[i], 
-                                optimizer, self.loss_fun, self.device, mask)
+                                optimizer, self.loss_fun, self.device, reduce_sim_scalar, mask)
                 else:
                     l, t, a = train(self.client_model[i], self.selected_distributed_dataloaders[i], 
-                                    optimizer, self.loss_fun, self.device)
+                                    optimizer, self.loss_fun, self.device, reduce_sim_scalar)
                 if print_output:
                     print_epoch_end(epoch, l, t, a, output_file)
             if hasattr(self.client_model[i], 'trained_prompts_checklist'):
